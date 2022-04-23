@@ -39,6 +39,28 @@ public class ParticipantRestController {
 			return new ResponseEntity("Unable to create. A participant with login " + participant.getLogin() + " already exist.", HttpStatus.CONFLICT);
 		}
 		participantService.add(participant);
-		return new ResponseEntity<Participant>(participant, HttpStatus.OK);
+		return new ResponseEntity("A participant with login " + participant.getLogin() + " has been added.", HttpStatus.OK);
 	}
+
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<?> deleteParticipant(@PathVariable("id") String login) {
+		Participant participant = participantService.findByLogin(login);
+		if (participant == null) {
+			return new ResponseEntity("Unable to delete. A participant with login " + participant.getLogin() + " doesn't exist.", HttpStatus.NOT_FOUND);
+		}
+		participantService.delete(participant);
+		return new ResponseEntity(" A participant with login " + participant.getLogin() + " has been deleted.", HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/{id}", method =  RequestMethod.PUT)
+	public ResponseEntity<?> updateParticipant(@PathVariable("id") String login, @RequestBody Participant updatedParticipant) {
+		Participant participant = participantService.findByLogin(login);
+		if (participant == null) {
+			return new ResponseEntity("Unable to update. A participant with login " + participant.getLogin() + " doesn't exist.", HttpStatus.NOT_FOUND);
+		}
+		participantService.update(participant, updatedParticipant);
+		return new ResponseEntity(" A participant with login " + participant.getLogin() + " has been updated.", HttpStatus.OK);
+	}
+
+
 }

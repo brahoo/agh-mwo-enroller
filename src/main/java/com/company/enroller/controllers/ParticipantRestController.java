@@ -59,7 +59,7 @@ public class ParticipantRestController {
 			return new ResponseEntity("Unable to update. A participant with login " + participant.getLogin() + " doesn't exist.", HttpStatus.NOT_FOUND);
 		}
 		if (!participant.getLogin().equals(updatedParticipant.getLogin())) {
-			return new ResponseEntity("Unable to update. Login can't be changed", HttpStatus.CONFLICT);
+			return new ResponseEntity("Unable to update. Login can't be changed.", HttpStatus.CONFLICT);
 		}
 		participantService.update(participant, updatedParticipant);
 		return new ResponseEntity(" A participant with login " + participant.getLogin() + " has been updated.", HttpStatus.OK);

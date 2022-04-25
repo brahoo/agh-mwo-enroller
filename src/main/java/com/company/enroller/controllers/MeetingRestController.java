@@ -104,7 +104,7 @@ public class MeetingRestController {
     }
 
     @RequestMapping(value = "/{id}/participants/{login}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> removeParticipant(@PathVariable("id") long id, @PathVariable String login) {
+    public ResponseEntity<?> removeParticipant(@PathVariable("id") long id, @PathVariable("login") String login) {
         Meeting meeting = meetingService.findById(id);
         Participant participant = participantService.findByLogin(login);
         //        if (meeting == null) {

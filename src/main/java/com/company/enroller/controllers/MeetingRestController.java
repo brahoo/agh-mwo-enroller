@@ -73,7 +73,7 @@ public class MeetingRestController {
         return new ResponseEntity("A meeting with title " + meeting.getTitle() + " has been updated.", HttpStatus.OK);
     }
 
-    @RequestMapping(value ="/{id}", method = RequestMethod.POST)
+    @RequestMapping(value ="/{id}/participants", method = RequestMethod.POST)
     public ResponseEntity<?> addParticipant(@PathVariable("id") long id, @RequestBody Participant participant) {
         Meeting meeting = meetingService.findById(id);
         Participant foundedParticipant = participantService.findByLogin(participant.getLogin());
@@ -101,6 +101,20 @@ public class MeetingRestController {
             return new ResponseEntity<>("Meeting has no participant.", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<Collection<Participant>>(participants, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/participants/{login}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> removeParticipant(@PathVariable("id") long id, @PathVariable String login) {
+        Meeting meeting = meetingService.findById(id);
+        Participant participant = participantService.findByLogin(login);
+        //        if (meeting == null) {
+//            return new ResponseEntity("Meeting not found.", HttpStatus.NOT_FOUND);
+//        }
+        if (!meeting.getParticipants().contains(participant)) {
+            return new ResponseEntity("Unable to remove participant from this meeting. Participant isn't already added to this meeting.", HttpStatus.NOT_FOUND);
+        }
+        meetingService.removeParticipant(meeting, participant);
+        return new ResponseEntity("A participant with login " + participant.getLogin() + " has been removed from meeting with title " + meeting.getTitle() + ".", HttpStatus.OK);
     }
 
 }

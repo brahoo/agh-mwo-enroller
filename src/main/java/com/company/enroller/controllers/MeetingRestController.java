@@ -2,6 +2,8 @@ package com.company.enroller.controllers;
 
 import java.util.Collection;
 
+import com.company.enroller.model.Participant;
+import com.company.enroller.persistence.ParticipantService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +18,15 @@ import com.company.enroller.persistence.MeetingService;
 @RequestMapping("/meetings")
 public class MeetingRestController {
 
+
+    private MeetingService meetingService;
+    private ParticipantService participantService;
+
     @Autowired
-    MeetingService meetingService;
+    public MeetingRestController (MeetingService meetingService, ParticipantService participantService) {
+        this.meetingService = meetingService;
+        this.participantService = participantService;
+    }
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ResponseEntity<?> getMeetings() {
@@ -59,6 +68,23 @@ public class MeetingRestController {
 //        }
         meetingService.update(meeting, updatedMeeting);
         return new ResponseEntity("A meeting with title " + meeting.getTitle() + " has been updated.", HttpStatus.OK);
+    }
+
+    @RequestMapping(value ="/{id}", method = RequestMethod.POST)
+    public ResponseEntity<?> addParticipant(@PathVariable("id") long id, @RequestBody Participant participant) {
+        Meeting meeting = meetingService.findById(id);
+        Participant foundedParticipant = participantService.findByLogin(participant.getLogin());
+//        if (meeting == null) {
+//            return new ResponseEntity("Unable to update. A meeting with id " + meeting.getId() + " doesn't exist.", HttpStatus.NOT_FOUND);
+//        }
+        if (foundedParticipant == null) {
+            return new ResponseEntity("Unable to add participant to meeting. Participant doesn't exist.", HttpStatus.NOT_FOUND);
+        }
+        if (meeting.getParticipants().contains(foundedParticipant)) {
+            return new ResponseEntity("Unable to add participant to meeting. Participant is already added to this meeting.", HttpStatus.CONFLICT);
+        }
+        meetingService.addParticipant(meeting, foundedParticipant);
+        return new ResponseEntity("A participant with login " + foundedParticipant.getLogin() + " has been added to meeting with title " + meeting.getTitle() + ".", HttpStatus.OK);
     }
 
 }

@@ -43,12 +43,15 @@ public class MeetingRestController {
         return new ResponseEntity<Meeting>(meeting, HttpStatus.OK);
     }
 
-//    @RequestMapping(value = "", method = RequestMethod.POST)
-//    public ResponseEntity<?> registerMeeting(@RequestBody Meeting meeting) {
-//        //Meeting foundMeeting = meetingService.findById(meeting.getId());
-//        meetingService.add(meeting);
-//        return new ResponseEntity("A meeting with title " + meeting.getTitle() + "has bee added.", HttpStatus.OK);
-//    }
+    @RequestMapping(value = "", method = RequestMethod.POST)
+    public ResponseEntity<?> registerMeeting(@RequestBody Meeting meeting) {
+        Meeting foundMeeting = meetingService.findById(meeting.getId());
+        if (foundMeeting != null) {
+            return new ResponseEntity("Unable to crate. A meeting with id " + foundMeeting.getId() + " already exist.", HttpStatus.CONFLICT);
+        }
+        meetingService.add(meeting);
+        return new ResponseEntity("A meeting with title " + meeting.getTitle() + "has bee added.", HttpStatus.OK);
+    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteMeeting(@PathVariable("id") long id) {
